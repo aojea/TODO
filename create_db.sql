@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS todo_db;
 USE todo_db;
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL
+    username VARCHAR(50) NOT NULL,
+    UNIQUE(username)
 );
 CREATE TABLE lists (
     id INT PRIMARY KEY AUTO_INCREMENT,
