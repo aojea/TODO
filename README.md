@@ -14,9 +14,20 @@ TODO app assumes that there is a user table in the database and use the authenti
 
 ## Features
 
-* User management is out of the scope of this project, this implies deal with password management and meet security requirements and there are different approaches with a much mature
+* User authorization
 * Tasks priorization
 * Tag filtering
+
+## DATABASE SCHEME
+
+The application uses the following database scheme and relationships
+
+Table users 1 - N Table Lists 1 - N Table Tasks
+
+The table username is not handled by the application.
+
+Each user can have multiple lists, and each list can have multiple tasks
+
 
 ## API REFERENCE
 
@@ -30,10 +41,11 @@ Each user can create and delete TODO lists
 
 ##### Resources
 
-```
-{
-  id: string,  # TODO list identifier
-  title: string, # Title of the TODO list
+type list struct {
+	ID       int    `json:"listId"`
+	Title    string `json:"title"`
+	Username string `json:"username"`
+
 }
 ```
 
@@ -55,12 +67,14 @@ Each TODO list is composed by tasks that can be created, updated, deleted and re
 
 ```
 {
-  id: string,  # list tasks identifier
-  title: string, # Title of the TODO list tasks
-  description: string, # Description of the tasks
-  position: int, # Position in the list of the tasks
-  completed: boolean, # Flag indicated if the task was done
-  tag: string, # comma separated list to tag the tasks
+type task struct {
+	ID          int    `json:"taskId"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Tags        string `json:"tags"`
+	Position    int    `json:"position"`
+	Completed   bool   `json:"completed"`
+	ListID      int    `json:"listId"`
 }
 ```
 
