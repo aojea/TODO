@@ -41,15 +41,11 @@ Each user can create and delete TODO lists
 
 list GET /user/me/lists Returns all the authenticated user's task lists.
 
-get GET /user/me/lists/{listId} Returns the authenticated user's specified task list.
-
 insert POST /user/me/lists Creates a new task list for the authenticated user
 
-update PUT /user/me/lists/{listId} Updates the authenticated user's specified task list.
+update PUT /user/me/list/{listId} Updates the authenticated user's specified task list.
 
-delete DELETE /user/me/lists/{listId} Deletes the authenticated user's specified task list.
-
-patch PATCH /user/me/lists/{listId} Updates the authenticated user's specified task list. This method supports patch semantics.
+delete DELETE /user/me/list/{listId} Deletes the authenticated user's specified task list.
 
 #### Tasks
 
@@ -82,15 +78,17 @@ update PUT /lists/{listId}/tasks/{taskId} Updates tthe specified task
 
 delete DELETE /lists/{listId}/tasks/{taskId}  Deletes the specified tasks
 
-patch PATCH /lists/{listId}/tasks/{taskId} Updates the specified task
-
 ## References
 
-[Go: Authorization API](https://auth0.com/docs/quickstart/backend/golang/01-authorization)
+[Building a REST API in golang using gorilla mux and mysql](https://medium.com/@kelvin_sp/building-and-testing-a-rest-api-in-golang-using-gorilla-mux-and-mysql-1f0518818ff6)
 
 
 ## Testing
 
 1. Deploy a database
 
-docker run -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
+docker run -d -rm -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
+
+2. Create the database schema
+
+docker exec -i todo-db mysql -uroot -ppassword < create_db.sql

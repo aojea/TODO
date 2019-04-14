@@ -25,10 +25,10 @@ func main() {
 	api := r.PathPrefix("/api/v1").Subrouter()
 	// TODO lists handlers
 	api.HandleFunc("/user/me/lists", handlers.ListsHandler(db))
-	api.HandleFunc("/user/me/lists/{listId}", handlers.ListIDHandler(db))
+	api.HandleFunc("/user/me/list/{listId}", handlers.ListIDHandler(db))
 	// Tasks handlers
 	api.HandleFunc("/lists/{listId}/tasks", handlers.TasksHandler(db))
-	api.HandleFunc("/lists/{listId}/tasks/{taskId}", handlers.TaskIDHandler(db))
+	api.HandleFunc("/lists/{listId}/task/{taskId}", handlers.TaskIDHandler(db))
 	// Run the app
 	http.ListenAndServe(":8080", r)
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,17 +17,15 @@ type list struct {
 	Username string `json:"username"`
 }
 
-func (l *list) getList(db *sql.DB) error {
-	return db.QueryRow("SELECT title FROM lists WHERE id=$1",
-		l.ID).Scan(&l.Title)
-}
-
 func (l *list) updateList(db *sql.DB) error {
 	return errors.New("Not implemented")
 }
 func (l *list) deleteList(db *sql.DB) error {
-	return errors.New("Not implemented")
+	statement := fmt.Sprintf("DELETE FROM lists WHERE id=%d", l.ID)
+	_, err := db.Exec(statement)
+	return err
 }
+
 func (l *list) createList(db *sql.DB) error {
 	statement := fmt.Sprintf("INSERT INTO lists(title, user_id) VALUES('%s', (SELECT id FROM users WHERE username = '%s'))", l.Title, l.Username)
 	_, err := db.Exec(statement)
@@ -61,7 +60,7 @@ func getLists(db *sql.DB) ([]list, error) {
 func ListsHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		// GET
+		// GET: get all lists that belongs to the user
 		case http.MethodGet:
 			lists, err := getLists(db)
 			if err != nil {
@@ -69,7 +68,7 @@ func ListsHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			respondWithJSON(w, http.StatusOK, lists)
-		// POST
+		// POST: create a new list for the user
 		case http.MethodPost:
 			var l list
 			decoder := json.NewDecoder(r.Body)
@@ -94,17 +93,26 @@ func ListsHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 // ListIDHandler operater on a specific list
 func ListIDHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Obtain the list id from the request
+		vars := mux.Vars(r)
+		id, err := strconv.Atoi(vars["listId"])
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+			return
+		}
+		l := list{ID: id}
+
 		switch r.Method {
-		case http.MethodGet:
-			vars := mux.Vars(r)
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "ListId: %v\n", vars["listId"])
-		case http.MethodPost:
-			w.WriteHeader(http.StatusOK)
+		// PUT: Update list id
 		case http.MethodPut:
 			w.WriteHeader(http.StatusOK)
+		// DELETE: Delete list id
 		case http.MethodDelete:
-			w.WriteHeader(http.StatusOK)
+			if err := l.deleteList(db); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
