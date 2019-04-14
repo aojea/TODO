@@ -2,9 +2,19 @@
 
 RESTful API for a TODO application.
 
+## System Design
+
+This applications is meant to be used in a microservices architecture. It´s stateless so it can scale out just adding more application in parallel and load balancing the requests.
+
+It uses a datastore, in this case a MariaDB database, so the data can  persist.
+
+User management is out of the scope of this project, this implies deal with password management and meet security requirements and there are different projects much more mature that can provide it.
+
+TODO app assumes that there is a user table in the database and use the authentication headers to link the TODO lists to the authenticated user.
+
 ## Features
 
-* User authentication
+* User management is out of the scope of this project, this implies deal with password management and meet security requirements and there are different approaches with a much mature
 * Tasks priorization
 * Tag filtering
 
@@ -29,17 +39,17 @@ Each user can create and delete TODO lists
 
 ##### Methods
 
-list GET /user/lists Returns all the authenticated user's task lists.
+list GET /user/me/lists Returns all the authenticated user's task lists.
 
-get GET /user/lists/{listId} Returns the authenticated user's specified task list.
+get GET /user/me/lists/{listId} Returns the authenticated user's specified task list.
 
-insert POST /user/lists Creates a new task list for the authenticated user
+insert POST /user/me/lists Creates a new task list for the authenticated user
 
-update PUT /user/lists/{listId} Updates the authenticated user's specified task list.
+update PUT /user/me/lists/{listId} Updates the authenticated user's specified task list.
 
-delete DELETE /users/lists/{listId} Deletes the authenticated user's specified task list.
+delete DELETE /user/me/lists/{listId} Deletes the authenticated user's specified task list.
 
-patch PATCH /users/lists/{listId} Updates the authenticated user's specified task list. This method supports patch semantics.
+patch PATCH /user/me/lists/{listId} Updates the authenticated user's specified task list. This method supports patch semantics.
 
 #### Tasks
 
@@ -73,3 +83,14 @@ update PUT /lists/{listId}/tasks/{taskId} Updates tthe specified task
 delete DELETE /lists/{listId}/tasks/{taskId}  Deletes the specified tasks
 
 patch PATCH /lists/{listId}/tasks/{taskId} Updates the specified task
+
+## References
+
+[Go: Authorization API](https://auth0.com/docs/quickstart/backend/golang/01-authorization)
+
+
+## Testing
+
+1. Deploy a database
+
+docker run -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
