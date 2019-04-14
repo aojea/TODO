@@ -72,11 +72,11 @@ list GET /lists/{listId}/tasks Returns all the tasks in the specified list
 
 get GET /lists/{listId}/tasks/{taskId} Returns the specified task
 
-insert POST /lists/{listId}/tasks/ Creates a new tasks in the the specified list
+insert POST /lists/{listId}/tasks/ Creates a new task in the the specified list
 
-update PUT /lists/{listId}/tasks/{taskId} Updates tthe specified task
+update PUT /lists/{listId}/tasks/{taskId} Updates the specified task
 
-delete DELETE /lists/{listId}/tasks/{taskId}  Deletes the specified tasks
+delete DELETE /lists/{listId}/tasks/{taskId} Deletes the specified tasks
 
 ## References
 

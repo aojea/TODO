@@ -20,6 +20,7 @@ type list struct {
 func (l *list) updateList(db *sql.DB) error {
 	return errors.New("Not implemented")
 }
+
 func (l *list) deleteList(db *sql.DB) error {
 	statement := fmt.Sprintf("DELETE FROM lists WHERE id=%d", l.ID)
 	_, err := db.Exec(statement)
@@ -97,7 +98,7 @@ func ListIDHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["listId"])
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+			respondWithError(w, http.StatusBadRequest, "Invalid list ID")
 			return
 		}
 		l := list{ID: id}
