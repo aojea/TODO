@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,14 +11,16 @@ import (
 )
 
 type list struct {
-	ID     int    `json:"listId"`
-	Title  string `json:"title"`
-	UserID int    `json:"userId"`
+	ID       int    `json:"listId"`
+	Title    string `json:"title"`
+	Username string `json:"username"`
 }
 
 func (l *list) getList(db *sql.DB) error {
-	return errors.New("Not implemented")
+	return db.QueryRow("SELECT title FROM lists WHERE id=$1",
+		l.ID).Scan(&l.Title)
 }
+
 func (l *list) updateList(db *sql.DB) error {
 	return errors.New("Not implemented")
 }
@@ -25,10 +28,19 @@ func (l *list) deleteList(db *sql.DB) error {
 	return errors.New("Not implemented")
 }
 func (l *list) createList(db *sql.DB) error {
-	return errors.New("Not implemented")
+	statement := fmt.Sprintf("INSERT INTO lists(title, user_id) VALUES('%s', (SELECT id FROM users WHERE username = '%s'))", l.Title, l.Username)
+	_, err := db.Exec(statement)
+	if err != nil {
+		return err
+	}
+	err = db.QueryRow("SELECT LAST_INSERT_ID()").Scan(&l.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 func getLists(db *sql.DB) ([]list, error) {
-	statement := "SELECT id, title FROM lists"
+	statement := "SELECT l.id, l.title, u.username FROM lists l INNER JOIN users u ON u.id = l.user_id"
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
@@ -37,7 +49,7 @@ func getLists(db *sql.DB) ([]list, error) {
 	lists := []list{}
 	for rows.Next() {
 		var l list
-		if err := rows.Scan(&l.ID, &l.Title); err != nil {
+		if err := rows.Scan(&l.ID, &l.Title, &l.Username); err != nil {
 			return nil, err
 		}
 		lists = append(lists, l)
@@ -49,6 +61,7 @@ func getLists(db *sql.DB) ([]list, error) {
 func ListsHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		// GET
 		case http.MethodGet:
 			lists, err := getLists(db)
 			if err != nil {
@@ -56,8 +69,22 @@ func ListsHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			respondWithJSON(w, http.StatusOK, lists)
+		// POST
 		case http.MethodPost:
-			w.WriteHeader(http.StatusOK)
+			var l list
+			decoder := json.NewDecoder(r.Body)
+			if err := decoder.Decode(&l); err != nil {
+				respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+				return
+			}
+			defer r.Body.Close()
+
+			if err := l.createList(db); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			respondWithJSON(w, http.StatusCreated, l)
+
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
