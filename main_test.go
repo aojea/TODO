@@ -73,7 +73,7 @@ func TestDeleteList(t *testing.T) {
 
 // Tasks API
 func TestCreateTask(t *testing.T) {
-	test.Put("/api/v1/lists/1/tasks").
+	test.Post("/api/v1/lists/1/tasks").
 		JSON(map[string]string{"title": "test", "description": "antonio task"}).
 		Expect(t).
 		Status(201).
@@ -83,7 +83,7 @@ func TestCreateTask(t *testing.T) {
 }
 
 func TestUpdateTask(t *testing.T) {
-	test.Post("/api/v1/lists/1/task/1").
+	test.Put("/api/v1/lists/1/task/1").
 		JSON(map[string]string{"title": "test", "description": "antonio task"}).
 		Expect(t).
 		Status(200).

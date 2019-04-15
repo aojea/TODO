@@ -159,22 +159,6 @@ func TaskIDHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			respondWithJSON(w, http.StatusOK, t)
-		// POST create task
-		case http.MethodPost:
-			decoder := json.NewDecoder(r.Body)
-			if err := decoder.Decode(&t); err != nil {
-				respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-				return
-			}
-			defer r.Body.Close()
-			// TODO: URL defined ids take precedence, we should check against the payload and fail if different
-			t.ListID = listID
-			t.ID = id
-			if err := t.createTask(db); err != nil {
-				respondWithError(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-			respondWithJSON(w, http.StatusOK, t)
 		// PUT update task
 		case http.MethodPut:
 			decoder := json.NewDecoder(r.Body)
