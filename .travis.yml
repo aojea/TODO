@@ -1,0 +1,26 @@
+dist: xenial
+
+language: go
+
+go:
+  - 1.12.x
+
+services:
+  - mysql
+
+before_install:
+  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('password') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+  - sudo mysql_upgrade -u root -ppassword
+  - sudo service mysql restart
+  - sudo mysql -u root -ppassword --default-character-set=utf8 < create_db.sql
+  - sudo mysql -u root -ppassword --default-character-set=utf8 < test/test_db.sql
+
+before_script:
+  - go vet ./...
+  - go build
+  - ./todo&
+
+script:
+  - go test
+  - pkill todo
+
