@@ -16,15 +16,30 @@ type list struct {
 	Username string `json:"username,omitempty"`
 }
 
+func (l *list) getList(db *sql.DB) error {
+	statement := fmt.Sprintf("SELECT l.title, u.username FROM lists l INNER JOIN users u ON u.id = l.user_id WHERE l.id='%d'", l.ID)
+	rows, err := db.Query(statement)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&l.Title, &l.Username); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (l *list) updateList(db *sql.DB) error {
-	// Note: It doesn't fail if id is not valid
+	// Note: It doesn't fail if id is not valid just return empty
 	statement := fmt.Sprintf("UPDATE lists SET title='%s' WHERE id=%d", l.Title, l.ID)
 	_, err := db.Exec(statement)
 	return err
 }
 
 func (l *list) deleteList(db *sql.DB) error {
-	// Note: It doesn't fail if id is not valid
+	// Note: It doesn't fail if id is not valid just return empty
 	statement := fmt.Sprintf("DELETE FROM lists WHERE id=%d", l.ID)
 	_, err := db.Exec(statement)
 	return err
@@ -107,6 +122,13 @@ func ListIDHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		l := list{ID: id}
 
 		switch r.Method {
+		// GET list
+		case http.MethodGet:
+			if err := l.getList(db); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			respondWithJSON(w, http.StatusOK, l)
 		// PUT: Update list id
 		case http.MethodPut:
 			decoder := json.NewDecoder(r.Body)
