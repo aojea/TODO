@@ -4,6 +4,13 @@ RESTful API for a TODO application.
 
 The application starts and http endpoint with the API in the port 8080.
 
+## HOWTO use it
+
+1. Compile the code with `go build`
+2. Install and initialize the MariaDB database with the script create_db.sql
+`mysql -u root -ppassword --default-character-set=utf8 < create_db.sql`
+3. Run the application `./todo`
+
 ## System Architecture
 
 ![System Architecture](docs/TODO_System_architecture.png)
@@ -129,4 +136,5 @@ docker exec -i todo-db mysql -uroot -ppassword < create_db.sql
 ## TODO
 
 - [ ] Allow application configuration(listening port, database connection, ...)
+- [ ] Sanity check database content
 - [ ] APIv2 with new features
