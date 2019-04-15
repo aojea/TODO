@@ -90,6 +90,7 @@ type list struct {
 
 * list `GET /user/me/lists`  Returns all the authenticated user's task lists.
 * insert `POST /user/me/lists` Creates a new task list for the authenticated user
+* get `get /user/me/list/{listId}` get the authenticated user's specified task list.
 * update `PUT /user/me/list/{listId}` Updates the authenticated user's specified task list.
 * delete `DELETE /user/me/list/{listId}` Deletes the authenticated user's specified task list.
 
@@ -115,9 +116,8 @@ type task struct {
 ##### Methods
 
 * list `GET /lists/{listId}/tasks` Returns all the tasks in the specified list
-    Allow to query tasks by tag  `tasks?query=tag%20eq%20'test'`
 * get `GET /lists/{listId}/tasks/{taskId}` Returns the specified task
-* insert `POST /lists/{listId}/tasks/` Creates a new task in the the specified list
+* insert `POST /lists/{listId}/tasks` Creates a new task in the the specified list
 * update `PUT /lists/{listId}/tasks/{taskId}` Updates the specified task
 * delete `DELETE /lists/{listId}/tasks/{taskId}` Deletes the specified tasks
 
@@ -130,11 +130,19 @@ type task struct {
 
 1. Deploy a database
 
-docker run -d --rm -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
+`docker run -d --rm -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3`
 
 2. Create the database schema
 
-docker exec -i todo-db mysql -uroot -ppassword < create_db.sql
+`docker exec -i todo-db mysql -uroot -ppassword < create_db.sql`
+
+3. Add the test data
+
+`docker exec -i todo-db mysql -uroot -ppassword < create_db.sql`
+
+4. Run tests
+
+`go test`
 
 ## TODO
 
@@ -143,3 +151,5 @@ docker exec -i todo-db mysql -uroot -ppassword < create_db.sql
 - [ ] Implement Unit and Integration testing
 - [ ] Obtain code coverage
 - [ ] Add authentication and authorization support
+- [ ] Add logging
+- [ ] Add tag filtering (Allow to query tasks by tag  `tasks?query=tag%20eq%20'test'`)
