@@ -6,6 +6,9 @@ The application starts and http endpoint with the API in the port 8080.
 
 ## HOWTO use it
 
+**Note** Current versions is missing configuration parameters and listening port and 
+database connection are hardcoded values.
+
 1. Compile the code with `go build`
 2. Install and initialize the MariaDB database with the script create_db.sql
 `mysql -u root -ppassword --default-character-set=utf8 < create_db.sql`
@@ -137,4 +140,6 @@ docker exec -i todo-db mysql -uroot -ppassword < create_db.sql
 
 - [ ] Allow application configuration(listening port, database connection, ...)
 - [ ] Sanity check database content
-- [ ] APIv2 with new features
+- [ ] Implement Unit and Integration testing
+- [ ] Obtain code coverage
+- [ ] Add authentication and authorization support
