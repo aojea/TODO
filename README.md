@@ -2,6 +2,8 @@
 
 RESTful API for a TODO application.
 
+The application starts and http endpoint with the API in the port 8080.
+
 ## System Architecture
 
 ![System Architecture](docs/TODO_System_architecture.png)
@@ -118,7 +120,7 @@ type task struct {
 
 1. Deploy a database
 
-docker run -d -rm -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
+docker run -d --rm -p 3306:3306 --name todo-db -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.3
 
 2. Create the database schema
 
