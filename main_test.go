@@ -72,13 +72,24 @@ func TestDeleteList(t *testing.T) {
 }
 
 // Tasks API
+
+const schemaTasks = `{
+	"taskId": "1",
+	"listId": "1",
+	"position": "1",
+  "title": "task title",
+	"description": "task description",
+	"completed": "false",
+	"tags": "tag1" 
+}`
+
 func TestCreateTask(t *testing.T) {
 	test.Post("/api/v1/lists/1/tasks").
 		JSON(map[string]string{"title": "test", "description": "antonio task"}).
 		Expect(t).
 		Status(201).
 		Type("application/json").
-		JSON(`{"title": "test", "username":"antonio"}`).
+		JSONSchema(schemaTasks).
 		Done()
 }
 
@@ -88,6 +99,7 @@ func TestUpdateTask(t *testing.T) {
 		Expect(t).
 		Status(200).
 		Type("application/json").
+		JSONSchema(schemaTasks).
 		Done()
 }
 
